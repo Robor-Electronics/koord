@@ -1,23 +1,21 @@
 package nl.robor.koord.geojson
 
-import arrow.core.Option
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.jvm.JvmInline
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 
-/**
- * Spec: [BoundingBox](https://datatracker.ietf.org/doc/html/rfc7946#section-5)
- */
-@Serializable
-@JvmInline
-public value class BoundingBox private constructor(
-    public val coordinates: DoubleArray,
-) {
-    public companion object {
+public val json: Json =
+    Json {
+        serializersModule =
+            SerializersModule {
+                polymorphic(Geometry::class) {
+                    subclass(Point::class, Point.serializer())
+                }
+            }
+        classDiscriminator = "type"
+        prettyPrint = true
     }
-}
 
-public sealed interface GeoJson {
-    @SerialName("bbox")
-    public val bbox: Option<BoundingBox>
-}
+@Serializable
+public sealed interface Geometry : GeoJson

@@ -3,20 +3,74 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
+agp = "8.9.2"
+akkurate = "0.11.0"
+arrow = "2.1.0"
+arrowContinuations = "1.2.4"
+dokka = "2.0.0"
+kotest = "5.9.1"
+kotest-ext-arrow = "1.4.0"
 kotlin = "2.1.20"
+kotlinxCoroutines = "1.9.0"
 kotlinxDatetime = "0.6.1"
 kotlinxSerializationJSON = "1.7.3"
-kotlinxCoroutines = "1.9.0"
+kover = "0.9.1"
+ksp = "2.1.20-2.0.1"
+spotless = "7.0.3"
 
 [libraries]
-kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+akkurate-arrow = { module = "dev.nesk.akkurate:akkurate-arrow", version.ref = "akkurate" }
+akkurate-core = { module = "dev.nesk.akkurate:akkurate-core", version.ref = "akkurate" }
+akkurate-ksp-plugin = { module = "dev.nesk.akkurate:akkurate-ksp-plugin", version.ref = "akkurate" }
+akkurate-test = { module = "dev.nesk.akkurate:akkurate-test", version.ref = "akkurate" }
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
+arrow-core-serialziation = { module = "io.arrow-kt:arrow-core-serialization", version.ref = "arrow" }
+arrow-continuations = { module = "io.arrow-kt:arrow-continuations", version.ref = "arrowContinuations" }
+kotest-assertions-arrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotest-ext-arrow" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-assertions-json = { module = "io.kotest:kotest-assertions-json", version.ref = "kotest" }
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJSON" }
-kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+
+# Required for convention plugins
+gradlePlugin-android-library = { module = "com.android.library:com.android.library.gradle.plugin", version.ref = "agp" }
+gradlePlugin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+gradlePlugin-kotlin-base = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+gradlePlugin-kotlin-multiplatform = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
+gradlePlugin-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
+gradlePlugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 
 # Libraries can be bundled together for easier import
 [bundles]
-kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines"]
-
+gradlePlugins = [
+    "gradlePlugin-android-library",
+    "gradlePlugin-dokka",
+    "gradlePlugin-kotlin-base",
+    "gradlePlugin-kotlin-multiplatform",
+    "gradlePlugin-kover",
+    "gradlePlugin-spotless",
+]
+kotlinxEcosystem = [
+    "kotlinxDatetime",
+    "kotlinxSerialization",
+    "kotlinxCoroutines"
+]
+testing = [
+    "kotest-assertions-arrow",
+    "kotest-assertions-core",
+    "kotest-assertions-json",
+    "kotest-framework-engine",
+    "kotest-property",
+]
+arrow = [
+    "arrow-core",
+    "arrow-core-serialziation",
+    "arrow-continuations"
+]
 [plugins]
 kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

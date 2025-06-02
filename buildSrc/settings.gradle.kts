@@ -1,9 +1,14 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+rootProject.name = "buildSrc"
+
 dependencyResolutionManagement {
 
     // Use Maven Central and the Gradle Plugin Portal for resolving dependencies in the shared build logic (`buildSrc`) project.
     @Suppress("UnstableApiUsage")
     repositories {
         mavenCentral()
+        google()
     }
 
     // Reuse the version catalog from the main build.
@@ -13,5 +18,3 @@ dependencyResolutionManagement {
         }
     }
 }
-
-rootProject.name = "buildSrc"
