@@ -1,0 +1,46 @@
+name: Release and publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: "Release type"
+        type: choice
+        required: true
+        default: "snapshot"
+        options:
+          - "alpha"
+          - "beta"
+          - "snapshot"
+          - "stable"
+
+env:
+  CI_RELEASE_TYPE: ${{ github.event.inputs.release-type }}
+  CI_RUN_NUMBER: ${{ github.run_number }}
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # build and publish
+      - name: Publish to GitHub Packages
+        run: ./gradlew publish --no-daemon
+        env:
+          # built‑in token is fine if repo == package owner;
+          # otherwise use the PAT you saved as a secret.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR:  ${{ github.actor }}
+

@@ -1,0 +1,73 @@
+name: Pull request
+
+on:
+  pull_request
+
+concurrency:
+  group: pull_request-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - uses: extractions/setup-just@v3
+
+      - name: Apply Spotless
+        run: just spotless
+
+      - name: Commit newly formatted files
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Auto-apply Spotless rules
+          file_pattern: client/**/*.kt
+
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - uses: extractions/setup-just@v3
+
+      - name: Build and test
+        run: just build
+
+      - name: Coverage
+        run: just coverage
+
+      - name: Add code coverage report
+        id: kover
+        uses: mi-kas/kover-report@v1
+        with:
+          path: build/reports/kover/report.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: Kover Report
+          update-comment: true
+
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'reports'
+          path: '**/build/reports/**'
