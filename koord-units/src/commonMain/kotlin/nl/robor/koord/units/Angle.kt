@@ -19,6 +19,10 @@ public value class Angle(private val radians: Double) : Comparable<Angle> {
 
     public operator fun div(scalar: Int): Angle = Angle(this.radians / scalar)
 
+    public operator fun rem(other: Angle): Angle {
+        return radians.rem(other.radians).radians
+    }
+
     public val inRadians: Double
         get() = radians
 
