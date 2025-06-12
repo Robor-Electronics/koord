@@ -19,6 +19,8 @@ import nl.robor.koord.geojson.validation.accessors.coordinates
 import nl.robor.koord.geojson.validation.accessors.latitude
 import nl.robor.koord.geojson.validation.accessors.longitude
 import nl.robor.koord.units.Angle.Companion.degrees
+import nl.robor.koord.units.Distance
+import nl.robor.koord.units.Distance.Companion.meters
 import kotlin.jvm.JvmInline
 
 @Validate
@@ -38,11 +40,11 @@ public value class Position private constructor(
         public operator fun invoke(
             longitude: Longitude,
             latitude: Latitude,
-            altitude: Option<Double> = None,
+            altitude: Option<Distance> = None,
         ): Position =
             altitude.fold(
                 ifSome = { altitude ->
-                    Position(doubleArrayOf(longitude.angle.inDegrees, latitude.angle.inDegrees, altitude))
+                    Position(doubleArrayOf(longitude.angle.inDegrees, latitude.angle.inDegrees, altitude.inMeters))
                 },
                 ifEmpty = { Position(doubleArrayOf(longitude.angle.inDegrees, latitude.angle.inDegrees)) },
             )
@@ -54,8 +56,8 @@ public value class Position private constructor(
     public val latitude: Latitude
         get() = Latitude.unchecked(coordinates[1].degrees)
 
-    public val altitude: Option<Double>
-        get() = coordinates.getOrNull(2).toOption()
+    public val altitude: Option<Distance>
+        get() = coordinates.getOrNull(2)?.meters.toOption()
 
     public fun validate(): ValidationResult<Position> = validator(this)
 

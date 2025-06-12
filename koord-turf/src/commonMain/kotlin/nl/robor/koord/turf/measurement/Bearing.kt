@@ -1,5 +1,6 @@
 package nl.robor.koord.turf.measurement
 
+import nl.robor.koord.geojson.Point
 import nl.robor.koord.geojson.Position
 import nl.robor.koord.units.Angle
 import nl.robor.koord.units.Angle.Companion.degrees
@@ -26,6 +27,9 @@ public fun Position.bearing(
 
     return atan2(a, b).radians
 }
+
+public fun Point.bearing(other: Point, final: Boolean = false) : Angle =
+    this.coordinates.bearing(other.coordinates, final)
 
 private fun Position.calculateFinalBearing(other: Position) : Angle {
     // Swap start and end

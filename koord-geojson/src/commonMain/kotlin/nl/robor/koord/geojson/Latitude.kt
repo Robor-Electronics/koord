@@ -44,7 +44,7 @@ public value class Latitude private constructor(
         public operator fun invoke(value: Angle): Either<NonEmptySet<ConstraintViolation>, Latitude> =
             either { bind(validator(Latitude(value))) }
 
-        internal fun unchecked(value: Angle): Latitude = Latitude(value)
+        public fun unchecked(value: Angle): Latitude = Latitude(value)
     }
 
     public data object Serializer : KSerializer<Latitude> {

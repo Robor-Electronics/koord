@@ -13,6 +13,8 @@ import nl.robor.koord.geojson.validation.accessors.coordinates
 import nl.robor.koord.geojson.validation.accessors.northeast
 import nl.robor.koord.geojson.validation.accessors.southwest
 import nl.robor.koord.units.Angle.Companion.degrees
+import nl.robor.koord.units.Distance.Companion.m
+import nl.robor.koord.units.Distance.Companion.meters
 import kotlin.jvm.JvmInline
 
 @Validate
@@ -30,7 +32,7 @@ public value class BoundingBox private constructor(
                 Position(
                     longitude = Longitude.unchecked(coordinates[0].degrees),
                     latitude = Latitude.unchecked(coordinates[1].degrees),
-                    altitude = Some(coordinates[2]),
+                    altitude = Some(coordinates[2].meters),
                 )
             } else {
                 Position(
@@ -45,7 +47,7 @@ public value class BoundingBox private constructor(
                 Position(
                     longitude = Longitude.unchecked(coordinates[3].degrees),
                     latitude = Latitude.unchecked(coordinates[4].degrees),
-                    altitude = Some(coordinates[5]),
+                    altitude = Some(coordinates[5].meters),
                 )
             } else {
                 Position(
@@ -78,10 +80,10 @@ public value class BoundingBox private constructor(
                         doubleArrayOf(
                             southwest.longitude.angle.inDegrees,
                             southwest.latitude.angle.inDegrees,
-                            southWestAltitude,
+                            southWestAltitude.inMeters,
                             northeast.longitude.angle.inDegrees,
                             northeast.latitude.angle.inDegrees,
-                            northeastAltitude,
+                            northeastAltitude.inMeters,
                         ),
                 )
             }.getOrElse {

@@ -1,5 +1,6 @@
 package nl.robor.koord.turf.measurement
 
+import nl.robor.koord.geojson.Point
 import nl.robor.koord.geojson.Position
 import nl.robor.koord.turf.toArcDistance
 import nl.robor.koord.units.Angle
@@ -22,3 +23,6 @@ public fun Position.distance(to: Position): Distance {
     val result: Angle = (2 * atan2(sqrt(a), sqrt(1 - a))).radians
     return result.toArcDistance()
 }
+
+public fun Point.distance(to: Point) : Distance =
+    this.coordinates.distance(to.coordinates)
