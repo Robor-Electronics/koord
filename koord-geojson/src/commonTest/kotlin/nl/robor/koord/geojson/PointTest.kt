@@ -9,6 +9,7 @@ import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import nl.robor.koord.units.Angle.Companion.degrees
 
 class PointTest :
     FunSpec({
@@ -25,8 +26,8 @@ class PointTest :
                 Point(
                     coordinates =
                         Position(
-                            longitude = Longitude(100.0).shouldBeRight(),
-                            latitude = Latitude(0.0).shouldBeRight(),
+                            longitude = Longitude(100.0.degrees).shouldBeRight(),
+                            latitude = Latitude(0.0.degrees).shouldBeRight(),
                         ),
                     bbox = None,
                 )
@@ -38,8 +39,8 @@ class PointTest :
         test("decode") {
             val point: Geometry = Json.decodeFromString(encodedPoint)
             point.shouldBeInstanceOf<Point>()
-            point.coordinates.longitude.degrees shouldBeEqual 100.0.degrees
-            point.coordinates.latitude.degrees shouldBeEqual 0.0.degrees
+            point.coordinates.longitude.angle shouldBeEqual 100.0.degrees
+            point.coordinates.latitude.angle shouldBeEqual 0.0.degrees
             point.coordinates.altitude.shouldBeNone()
             point.bbox.shouldBeNone()
         }

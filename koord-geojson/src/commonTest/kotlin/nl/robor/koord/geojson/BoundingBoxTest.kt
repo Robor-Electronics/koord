@@ -7,6 +7,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import nl.robor.koord.units.Angle.Companion.degrees
 
 class BoundingBoxTest :
     FunSpec({
@@ -21,13 +22,13 @@ class BoundingBoxTest :
                     BoundingBox(
                         southwest =
                             Position(
-                                longitude = Longitude(-10.0).bind(),
-                                latitude = Latitude(-10.0).bind(),
+                                longitude = Longitude((-10.0).degrees).bind(),
+                                latitude = Latitude((-10.0).degrees).bind(),
                             ),
                         northeast =
                             Position(
-                                longitude = Longitude(10.0).bind(),
-                                latitude = Latitude(10.0).bind(),
+                                longitude = Longitude(10.0.degrees).bind(),
+                                latitude = Latitude(10.0.degrees).bind(),
                             ),
                     )
                 }.shouldBeRight()

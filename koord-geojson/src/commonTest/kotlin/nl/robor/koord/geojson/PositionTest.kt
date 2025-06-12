@@ -14,6 +14,7 @@ import io.kotest.property.arbitrary.double
 import io.kotest.property.arbitrary.single
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import nl.robor.koord.units.Angle.Companion.degrees
 
 class PositionTest :
     FunSpec({
@@ -26,7 +27,7 @@ class PositionTest :
                     )
                 val encoded = Json.encodeToString(position)
                 encoded shouldEqualJson {
-                    """[${position.longitude.degrees.value}, ${position.latitude.degrees.value}]"""
+                    """[${position.longitude.angle.inDegrees}, ${position.latitude.angle.inDegrees}]"""
                 }
             }
 
@@ -39,7 +40,7 @@ class PositionTest :
                     )
                 val encoded = Json.encodeToString(position)
                 encoded shouldEqualJson {
-                    """[${position.longitude.degrees.value}, ${position.latitude.degrees.value}, ${position.altitude.shouldBeSome()}]"""
+                    """[${position.longitude.angle.inDegrees}, ${position.latitude.angle.inDegrees}, ${position.altitude.shouldBeSome()}]"""
                 }
             }
         }
@@ -48,7 +49,7 @@ class PositionTest :
             test("without altitude") {
                 val longitude = arbLongitude.single()
                 val latitude = arbLatitude.single()
-                val decoded = """[${longitude.degrees.value}, ${latitude.degrees.value}]"""
+                val decoded = """[${longitude.angle.inDegrees}, ${latitude.angle.inDegrees}]"""
                 val position: Position = Json.decodeFromString(decoded)
                 position.coordinates shouldHaveSize 2
                 position.longitude shouldBeEqual longitude
@@ -59,7 +60,7 @@ class PositionTest :
                 val longitude = arbLongitude.single()
                 val latitude = arbLatitude.single()
                 val altitude = Arb.double().single()
-                val decoded = """[${longitude.degrees.value}, ${latitude.degrees.value}, $altitude]"""
+                val decoded = """[${longitude.angle.inDegrees}, ${latitude.angle.inDegrees}, $altitude]"""
                 val position: Position = Json.decodeFromString(decoded)
                 position.coordinates shouldHaveSize 3
                 position.longitude shouldBeEqual longitude
@@ -70,10 +71,10 @@ class PositionTest :
 
         context("validation") {
             test("invalid lon/lat") {
-                val longitude = Longitude(180.0).shouldBeRight()
-                val latitude = Latitude(90.0).shouldBeRight()
+                val longitude = Longitude(180.0.degrees).shouldBeRight()
+                val latitude = Latitude(90.0.degrees).shouldBeRight()
                 // Latitude / longitude swapped in encoded json
-                val json = """[${latitude.degrees.value}, ${longitude.degrees.value}]"""
+                val json = """[${latitude.angle.inDegrees}, ${longitude.angle.inDegrees}]"""
                 shouldThrow<ValidationResult.Exception> {
                     Json.decodeFromString<Position>(json)
                 }

@@ -14,6 +14,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                api(projects.koordUnits)
                 api(libs.kotlinxSerialization)
                 api(libs.akkurate.arrow)
                 api(libs.akkurate.core)

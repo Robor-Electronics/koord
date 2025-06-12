@@ -18,6 +18,7 @@ import kotlinx.serialization.encoding.Encoder
 import nl.robor.koord.geojson.validation.accessors.coordinates
 import nl.robor.koord.geojson.validation.accessors.latitude
 import nl.robor.koord.geojson.validation.accessors.longitude
+import nl.robor.koord.units.Angle.Companion.degrees
 import kotlin.jvm.JvmInline
 
 @Validate
@@ -41,9 +42,9 @@ public value class Position private constructor(
         ): Position =
             altitude.fold(
                 ifSome = { altitude ->
-                    Position(doubleArrayOf(longitude.degrees.value, latitude.degrees.value, altitude))
+                    Position(doubleArrayOf(longitude.angle.inDegrees, latitude.angle.inDegrees, altitude))
                 },
-                ifEmpty = { Position(doubleArrayOf(longitude.degrees.value, latitude.degrees.value)) },
+                ifEmpty = { Position(doubleArrayOf(longitude.angle.inDegrees, latitude.angle.inDegrees)) },
             )
     }
 

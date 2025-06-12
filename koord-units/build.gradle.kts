@@ -3,17 +3,17 @@ plugins {
 }
 
 android {
-    namespace = "nl.robor.koord.turf"
+    namespace = "nl.robor.koord.units"
 }
 
 kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.koordGeojson)
-                api(projects.koordUnits)
+
             }
         }
+
 
         commonTest {
             dependencies {

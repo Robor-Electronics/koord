@@ -16,13 +16,14 @@ import io.kotest.property.exhaustive.map
 import io.kotest.property.forAll
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import nl.robor.koord.units.Angle.Companion.degrees
 
 class LongitudeTest :
     FunSpec({
         test("in valid range [-180, 180]") {
             Exhaustive
                 .ints(-180..180)
-                .map { it.toDouble() }
+                .map { it.toDouble() .degrees}
                 .map(Longitude::invoke)
                 .forAll { value -> value.isRight() }
         }
@@ -32,11 +33,11 @@ class LongitudeTest :
             val arbInvalidPositive = Arb.double(180.0, Double.POSITIVE_INFINITY).filterNot { it == 180.0 }
             arbInvalidNegative
                 .merge(arbInvalidPositive)
-                .forAll { Longitude(it).isLeft() }
+                .forAll { Longitude(it.degrees).isLeft() }
         }
 
         test("encode") {
-            val longitude: Longitude = Longitude(-180.0).shouldBeRight()
+            val longitude: Longitude = Longitude((-180.0).degrees).shouldBeRight()
             val encodedLongitude = Json.encodeToString(longitude)
             encodedLongitude shouldEqualJson { "-180.0" }
         }
@@ -44,7 +45,7 @@ class LongitudeTest :
         test("decode valid value") {
             val encoded = "-180.0"
             val decoded: Longitude = Json.decodeFromString(encoded)
-            decoded.degrees shouldBeEqual (-180.0).degrees
+            decoded.angle shouldBeEqual (-180.0).degrees
         }
 
         test("decode invalid value") {

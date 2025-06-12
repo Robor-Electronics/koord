@@ -8,7 +8,7 @@ import dev.nesk.akkurate.Validator
 import dev.nesk.akkurate.annotations.Validate
 import dev.nesk.akkurate.arrow.bind
 import dev.nesk.akkurate.constraints.ConstraintViolation
-import dev.nesk.akkurate.constraints.builders.isBetween
+import dev.nesk.akkurate.constraints.constrain
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -16,32 +16,31 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import nl.robor.koord.geojson.validation.accessors.degrees
-import nl.robor.koord.geojson.validation.accessors.value
+import nl.robor.koord.geojson.validation.accessors.angle
+import nl.robor.koord.units.Angle
+import nl.robor.koord.units.Angle.Companion.degrees
 import kotlin.jvm.JvmInline
 
 @Validate
 @Serializable(with = Longitude.Serializer::class)
 @JvmInline
 public value class Longitude private constructor(
-    public val degrees: Degrees,
+    public val angle: Angle,
 ) : Comparable<Longitude> {
-    override fun compareTo(other: Longitude): Int = degrees.compareTo(other.degrees)
+    override fun compareTo(other: Longitude): Int = this.angle.compareTo(other.angle)
 
     public companion object {
         public val validator: Validator.Runner<Longitude> =
             Validator<Longitude> {
-                degrees.value.isBetween(-180.0..180.0)
+                angle.constrain { angle ->
+                    (-(180.degrees)..180.degrees).contains(angle)
+                }
             }
 
-        public operator fun invoke(value: Degrees): Either<NonEmptySet<ConstraintViolation>, Longitude> =
+        public operator fun invoke(value: Angle): Either<NonEmptySet<ConstraintViolation>, Longitude> =
             either { bind(validator(Longitude(value))) }
 
-        public operator fun invoke(value: Double): Either<NonEmptySet<ConstraintViolation>, Longitude> = invoke(value.degrees)
-
-        internal fun unchecked(value: Degrees): Longitude = Longitude(value)
-
-        internal fun unchecked(value: Double): Longitude = Longitude(value.degrees)
+        internal fun unchecked(value: Angle): Longitude = Longitude(value)
     }
 
     public data object Serializer : KSerializer<Longitude> {
@@ -52,7 +51,7 @@ public value class Longitude private constructor(
             encoder: Encoder,
             value: Longitude,
         ) {
-            encoder.encodeDouble(value.degrees.value)
+            encoder.encodeDouble(value.angle.inDegrees)
         }
 
         override fun deserialize(decoder: Decoder): Longitude {

@@ -12,6 +12,7 @@ import kotlinx.serialization.Serializable
 import nl.robor.koord.geojson.validation.accessors.coordinates
 import nl.robor.koord.geojson.validation.accessors.northeast
 import nl.robor.koord.geojson.validation.accessors.southwest
+import nl.robor.koord.units.Angle.Companion.degrees
 import kotlin.jvm.JvmInline
 
 @Validate
@@ -27,14 +28,14 @@ public value class BoundingBox private constructor(
         get() =
             if (hasAltitude) {
                 Position(
-                    longitude = Longitude.unchecked(coordinates[0]),
-                    latitude = Latitude.unchecked(coordinates[1]),
+                    longitude = Longitude.unchecked(coordinates[0].degrees),
+                    latitude = Latitude.unchecked(coordinates[1].degrees),
                     altitude = Some(coordinates[2]),
                 )
             } else {
                 Position(
-                    longitude = Longitude.unchecked(coordinates[0]),
-                    latitude = Latitude.unchecked(coordinates[1]),
+                    longitude = Longitude.unchecked(coordinates[0].degrees),
+                    latitude = Latitude.unchecked(coordinates[1].degrees),
                 )
             }
 
@@ -42,14 +43,14 @@ public value class BoundingBox private constructor(
         get() =
             if (hasAltitude) {
                 Position(
-                    longitude = Longitude.unchecked(coordinates[3]),
-                    latitude = Latitude.unchecked(coordinates[4]),
+                    longitude = Longitude.unchecked(coordinates[3].degrees),
+                    latitude = Latitude.unchecked(coordinates[4].degrees),
                     altitude = Some(coordinates[5]),
                 )
             } else {
                 Position(
-                    longitude = Longitude.unchecked(coordinates[2]),
-                    latitude = Latitude.unchecked(coordinates[3]),
+                    longitude = Longitude.unchecked(coordinates[2].degrees),
+                    latitude = Latitude.unchecked(coordinates[3].degrees),
                 )
             }
 
@@ -75,11 +76,11 @@ public value class BoundingBox private constructor(
                 BoundingBox(
                     coordinates =
                         doubleArrayOf(
-                            southwest.longitude.degrees.value,
-                            southwest.latitude.degrees.value,
+                            southwest.longitude.angle.inDegrees,
+                            southwest.latitude.angle.inDegrees,
                             southWestAltitude,
-                            northeast.longitude.degrees.value,
-                            northeast.latitude.degrees.value,
+                            northeast.longitude.angle.inDegrees,
+                            northeast.latitude.angle.inDegrees,
                             northeastAltitude,
                         ),
                 )
@@ -87,10 +88,10 @@ public value class BoundingBox private constructor(
                 BoundingBox(
                     coordinates =
                         doubleArrayOf(
-                            southwest.longitude.degrees.value,
-                            southwest.latitude.degrees.value,
-                            northeast.longitude.degrees.value,
-                            northeast.latitude.degrees.value,
+                            southwest.longitude.angle.inDegrees,
+                            southwest.latitude.angle.inDegrees,
+                            northeast.longitude.angle.inDegrees,
+                            northeast.latitude.angle.inDegrees,
                         ),
                 )
             }

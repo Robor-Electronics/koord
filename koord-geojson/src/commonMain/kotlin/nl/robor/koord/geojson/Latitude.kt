@@ -9,6 +9,7 @@ import dev.nesk.akkurate.annotations.Validate
 import dev.nesk.akkurate.arrow.bind
 import dev.nesk.akkurate.constraints.ConstraintViolation
 import dev.nesk.akkurate.constraints.builders.isBetween
+import dev.nesk.akkurate.constraints.constrain
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -16,8 +17,9 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import nl.robor.koord.geojson.validation.accessors.degrees
-import nl.robor.koord.geojson.validation.accessors.value
+import nl.robor.koord.geojson.validation.accessors.angle
+import nl.robor.koord.units.Angle
+import nl.robor.koord.units.Angle.Companion.degrees
 import kotlin.jvm.JvmInline
 
 @Target(AnnotationTarget.FUNCTION)
@@ -27,24 +29,22 @@ public annotation class Unchecked
 @Serializable(with = Latitude.Serializer::class)
 @JvmInline
 public value class Latitude private constructor(
-    public val degrees: Degrees,
+    public val angle: Angle,
 ) : Comparable<Latitude> {
-    override fun compareTo(other: Latitude): Int = degrees.compareTo(other.degrees)
+    override fun compareTo(other: Latitude): Int = this.angle.compareTo(other.angle)
 
     public companion object {
         public val validator: Validator.Runner<Latitude> =
             Validator.Companion<Latitude> {
-                degrees.value.isBetween(-90.0..90.0)
+                angle.constrain { angle ->
+                    (-(90.degrees)..90.degrees).contains(angle)
+                }
             }
 
-        public operator fun invoke(value: Degrees): Either<NonEmptySet<ConstraintViolation>, Latitude> =
+        public operator fun invoke(value: Angle): Either<NonEmptySet<ConstraintViolation>, Latitude> =
             either { bind(validator(Latitude(value))) }
 
-        public operator fun invoke(value: Double): Either<NonEmptySet<ConstraintViolation>, Latitude> = invoke(value.degrees)
-
-        internal fun unchecked(value: Degrees): Latitude = Latitude(value)
-
-        internal fun unchecked(value: Double): Latitude = Latitude(value.degrees)
+        internal fun unchecked(value: Angle): Latitude = Latitude(value)
     }
 
     public data object Serializer : KSerializer<Latitude> {
@@ -55,12 +55,12 @@ public value class Latitude private constructor(
             encoder: Encoder,
             value: Latitude,
         ) {
-            encoder.encodeDouble(value.degrees.value)
+            encoder.encodeDouble(value.angle.inDegrees)
         }
 
         override fun deserialize(decoder: Decoder): Latitude {
             val rawValue = decoder.decodeDouble()
-            val validationResult = Latitude.validator(Latitude(Degrees(rawValue)))
+            val validationResult = Latitude.validator(Latitude(rawValue.degrees))
             return when (validationResult) {
                 is ValidationResult.Failure -> validationResult.orThrow()
                 is ValidationResult.Success<Latitude> -> validationResult.value
